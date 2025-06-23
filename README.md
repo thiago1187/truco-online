@@ -53,7 +53,8 @@ cd truco-online
 
 ```bash
 cd backend
-npm install && npm start
+npm install
+npm start
 ```
 
 ### 3. Rodar o Frontend Flutter
@@ -63,3 +64,4 @@ cd ../frontend
 flutter pub get
 flutter run
 ```
+
