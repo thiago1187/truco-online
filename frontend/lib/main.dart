@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'dart:io';
 import 'room_page.dart';
 
 void main() {
@@ -98,6 +99,27 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Future<void> playAgainstBot() async {
+    final roomName =
+        roomController.text.isNotEmpty ? roomController.text : 'sala-bot';
+
+    socket.emit('createRoom', roomName);
+    socket.emit('joinRoom', {
+      'roomName': roomName,
+      'username': 'jogador',
+    });
+
+    await Process.start('node', ['../backend/bot.js', roomName, 'Bot']);
+    socket.emit('startGame', roomName);
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => RoomPage(roomName: roomName, socket: socket),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -123,6 +145,11 @@ class _HomePageState extends State<HomePage> {
             ElevatedButton(
               onPressed: joinRoom,
               child: const Text('Entrar na Sala'),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: playAgainstBot,
+              child: const Text('Jogar contra Bot'),
             ),
           ],
         ),
