@@ -53,7 +53,8 @@ cd truco-online
 
 ```bash
 cd backend
-npm install && npm start
+npm install
+npm start
 ```
 Se precisar alterar a porta padrão (3000), defina a variável `PORT` antes de iniciar o servidor. Exemplo:
 
@@ -68,3 +69,4 @@ cd ../frontend
 flutter pub get
 flutter run
 ```
+
