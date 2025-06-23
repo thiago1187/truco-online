@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'dart:io';
 import 'dart:async';
+import 'dart:math';
 import 'room_page.dart';
 import 'game_screen.dart';
 
@@ -119,14 +120,15 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> playAgainstBot() async {
-    final roomName =
-        roomController.text.isNotEmpty ? roomController.text : 'sala-bot';
+    final random = Random();
+    final roomName = 'sala-bot-${random.nextInt(1 << 32)}';
+    final playerName = 'Jogador${random.nextInt(1000)}';
 
     await _ensureConnected();
     socket.emit('createRoom', roomName);
     socket.emit('joinRoom', {
       'roomName': roomName,
-      'username': 'jogador',
+      'username': playerName,
     });
 
     void startGameListener(dynamic username) {
@@ -150,7 +152,7 @@ class _HomePageState extends State<HomePage> {
       MaterialPageRoute(
         builder: (context) => GameScreen(
           socket: socket,
-          playerName: 'jogador',
+          playerName: playerName,
           roomCode: roomName,
         ),
       ),
