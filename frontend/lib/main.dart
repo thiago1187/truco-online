@@ -129,6 +129,20 @@ class _HomePageState extends State<HomePage> {
       'username': 'jogador',
     });
 
+    final completer = Completer<void>();
+
+    void handListener(dynamic data) {
+      final isInitialCards = data is List;
+      final isHandForPlayer =
+          data is Map && data['player'] == 'jogador' && data['hand'] is List;
+
+      if (isInitialCards || isHandForPlayer) {
+        socket.off('cartasIniciais', handListener);
+        socket.off('hand', handListener);
+        if (!completer.isCompleted) completer.complete();
+      }
+    }
+
     void startGameListener(dynamic username) {
       if (username == 'Bot') {
         socket.off('playerJoined', startGameListener);
@@ -137,24 +151,32 @@ class _HomePageState extends State<HomePage> {
     }
 
     socket.on('playerJoined', startGameListener);
+    socket.on('cartasIniciais', handListener);
+    socket.on('hand', handListener);
 
+    Process? botProcess;
     try {
-      await Process.start('node', ['../backend/bot.js', roomName, 'Bot']);
+      botProcess = await Process.start('node', ['../backend/bot.js', roomName, 'Bot']);
+      await completer.future;
+      if (!mounted) return;
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => GameScreen(
+            socket: socket,
+            playerName: 'jogador',
+            roomCode: roomName,
+          ),
+        ),
+      );
     } catch (e) {
       print('Erro ao iniciar bot: $e');
+    } finally {
+      socket.off('playerJoined', startGameListener);
+      socket.off('cartasIniciais', handListener);
+      socket.off('hand', handListener);
+      botProcess?.kill();
     }
-
-    if (!mounted) return;
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => GameScreen(
-          socket: socket,
-          playerName: 'jogador',
-          roomCode: roomName,
-        ),
-      ),
-    );
   }
 
   @override
