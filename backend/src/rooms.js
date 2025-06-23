@@ -18,6 +18,7 @@ function joinRoom(roomName, username, socket) {
     if (!rooms[roomName]) {
         socket.emit('error', 'Sala não existe!');
     } else {
+        socket.username = username;
         rooms[roomName].players.push(username);
         socket.join(roomName);
         socket.to(roomName).emit('playerJoined', username);
