@@ -46,3 +46,20 @@ Esse projeto tem como objetivo criar um app de Truco completo, online e local, c
 ```bash
 git clone https://github.com/thiago1187/truco-online.git
 cd truco-online
+
+```
+
+### 2. Executar o Backend
+
+```bash
+cd backend
+npm install && npm start
+```
+
+### 3. Rodar o Frontend Flutter
+
+```bash
+cd ../frontend
+flutter pub get
+flutter run
+```
