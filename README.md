@@ -37,6 +37,12 @@ Esse projeto tem como objetivo criar um app de Truco completo, online e local, c
 - Interface responsiva
 - Pronto pra web, desktop e mobile
 
+## Pré-requisitos
+
+Para rodar o projeto é necessário ter o **Node.js** e o **Flutter SDK** instalados.
+Garanta que o executável `node` esteja no `PATH`, pois o app Flutter utiliza esse
+comando para iniciar o bot automaticamente.
+
 ---
 
 ## Como Rodar o Projeto Localmente
@@ -69,4 +75,8 @@ cd ../frontend
 flutter pub get
 flutter run
 ```
+
+Ao abrir a aplicação, pressione **"Jogar contra Bot"** para iniciar uma partida
+contra a IA. O bot será executado automaticamente sem necessidade de comando
+adicional.
 
