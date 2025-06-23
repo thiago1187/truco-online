@@ -71,7 +71,7 @@ class _GameScreenState extends State<GameScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Jogo de Truco'),
+        title: Text('Jogo de Truco - ${widget.playerName}'),
       ),
       body: Column(
         children: [
