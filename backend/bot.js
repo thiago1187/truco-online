@@ -21,6 +21,12 @@ socket.on('hand', (data) => {
     }
 });
 
+// Compatibilidade com servidores mais novos
+socket.on('cartasIniciais', (cartas) => {
+    hand = cartas;
+    console.log('Cartas iniciais recebidas:', hand);
+});
+
 socket.on('suaVez', () => {
     if (hand.length === 0) return;
     const index = Math.floor(Math.random() * hand.length);
