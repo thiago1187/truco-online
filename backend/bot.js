@@ -28,3 +28,7 @@ socket.on('suaVez', () => {
     console.log('Jogando carta', card);
     socket.emit('jogarCarta', { roomName, username, card });
 });
+
+socket.on('cartaJogada', (data) => {
+    console.log(`${data.username} jogou`, data.card);
+});

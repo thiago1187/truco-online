@@ -41,7 +41,7 @@ class _HomePageState extends State<HomePage> {
 
   void connectSocket() {
     socket = IO.io(
-        'https://8d9e-2804-14d-54b8-835c-8850-2802-a70e-4a37.ngrok-free.app',
+        'http://localhost:3000',
         IO.OptionBuilder()
             .setTransports(['websocket'])
             .disableAutoConnect()

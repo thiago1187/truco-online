@@ -10,7 +10,8 @@ function createRoom(roomName, socket) {
     } else {
         rooms[roomName] = {
             players: [],
-            messages: []
+            messages: [],
+            sockets: {}
         };
         socket.join(roomName);
         socket.emit('roomCreated', roomName);
@@ -23,6 +24,8 @@ function joinRoom(roomName, username, socket) {
         socket.emit('error', 'Sala não existe!');
     } else {
         rooms[roomName].players.push(username);
+        rooms[roomName].sockets[username] = socket.id;
+        socket.username = username;
         socket.join(roomName);
         socket.to(roomName).emit('playerJoined', username);
         console.log(`${username} entrou na sala ${roomName}`);
@@ -44,6 +47,7 @@ function disconnect(socket, io) {
 
         if (index !== -1) {
             players.splice(index, 1);
+            delete rooms[roomName].sockets[socket.username];
             socket.to(roomName).emit('playerLeft', socket.username);
         }
     }
