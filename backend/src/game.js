@@ -37,7 +37,11 @@ function startGame(roomName, io) {
 
     room.players.forEach((player) => {
         room.game.hands[player] = deck.splice(0, 3);
-        io.to(roomName).emit('hand', { player, hand: room.game.hands[player] });
+        const socketId = room.sockets[player];
+        if (socketId) {
+            io.to(socketId).emit('cartasIniciais', room.game.hands[player]);
+            io.to(socketId).emit('hand', { player, hand: room.game.hands[player] });
+        }
     });
 
     io.to(roomName).emit('gameStarted', 'O jogo começou!');
