@@ -1,8 +1,12 @@
-const { createDeck, shuffle } = require('./game');
+const { compareCards } = require('./game');
 
-const deck = shuffle(createDeck());
-const player1 = deck.splice(0, 3);
-const player2 = deck.splice(0, 3);
-
-console.log('Mao do Jogador 1:', player1);
-console.log('Mao do Jogador 2:', player2);
+const order = ['4', '5', '6', '7', 'Q', 'J', 'K', 'A', '2', '3'];
+for (let i = 0; i < order.length - 1; i++) {
+  const weaker = { suit: 'paus', rank: order[i] };
+  const stronger = { suit: 'copas', rank: order[i + 1] };
+  if (compareCards(stronger, weaker) <= 0) {
+    console.error(`Erro: ${order[i + 1]} deveria vencer ${order[i]}`);
+    process.exit(1);
+  }
+}
+console.log('Todos os testes passaram');
