@@ -29,7 +29,11 @@ function startGame(roomName, io) {
     }
 
     const deck = shuffle(createDeck());
-    room.game = { hands: {} };
+    room.game = {
+        hands: {},
+        currentTurnIndex: 0,
+        playersOrder: room.players.slice(),
+    };
 
     room.players.forEach((player) => {
         room.game.hands[player] = deck.splice(0, 3);
@@ -37,6 +41,37 @@ function startGame(roomName, io) {
     });
 
     io.to(roomName).emit('gameStarted', 'O jogo começou!');
+
+    const firstPlayer = room.game.playersOrder[room.game.currentTurnIndex];
+    const socketId = room.sockets[firstPlayer];
+    if (socketId) {
+        io.to(socketId).emit('suaVez');
+    }
+}
+
+function playCard(roomName, username, card, io) {
+    const room = rooms.getRoom(roomName);
+    if (!room || !room.game) return;
+
+    const hand = room.game.hands[username];
+    if (hand) {
+        const index = hand.findIndex(
+            (c) => c.suit === card.suit && c.rank === card.rank
+        );
+        if (index !== -1) {
+            hand.splice(index, 1);
+        }
+    }
+
+    io.to(roomName).emit('cartaJogada', { username, card });
+
+    room.game.currentTurnIndex =
+        (room.game.currentTurnIndex + 1) % room.game.playersOrder.length;
+    const nextPlayer = room.game.playersOrder[room.game.currentTurnIndex];
+    const socketId = room.sockets[nextPlayer];
+    if (socketId) {
+        io.to(socketId).emit('suaVez');
+    }
 }
 
 function rankValue(card) {
@@ -49,6 +84,7 @@ function compareCards(a, b) {
 
 module.exports = {
     startGame,
+    playCard,
     createDeck,
     shuffle,
     compareCards,

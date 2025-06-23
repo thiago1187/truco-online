@@ -31,6 +31,10 @@ io.on('connection', (socket) => {
         game.startGame(roomName, io);
     });
 
+    socket.on('jogarCarta', ({ roomName, username, card }) => {
+        game.playCard(roomName, username, card, io);
+    });
+
     socket.on('sendMessage', ({ roomName, username, message }) => {
         rooms.sendMessage(roomName, username, message, io);
     });
