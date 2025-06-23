@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'dart:io';
+import 'dart:async';
 import 'room_page.dart';
 import 'game_screen.dart';
 
@@ -71,10 +72,25 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void createRoom() {
+  Future<void> _ensureConnected() async {
+    if (socket.connected) return;
+    final completer = Completer<void>();
+    void handler(_) {
+      socket.off('connect', handler);
+      if (!completer.isCompleted) completer.complete();
+    }
+
+    socket.on('connect', handler);
+    socket.connect();
+    await completer.future;
+  }
+
+  Future<void> createRoom() async {
     final roomName = roomController.text;
     if (roomName.isNotEmpty) {
+      await _ensureConnected();
       socket.emit('createRoom', roomName);
+      if (!mounted) return;
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -84,13 +100,15 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  void joinRoom() {
+  Future<void> joinRoom() async {
     final roomName = roomController.text;
     if (roomName.isNotEmpty) {
+      await _ensureConnected();
       socket.emit('joinRoom', {
         'roomName': roomName,
         'username': 'convidado',
       });
+      if (!mounted) return;
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -104,15 +122,29 @@ class _HomePageState extends State<HomePage> {
     final roomName =
         roomController.text.isNotEmpty ? roomController.text : 'sala-bot';
 
+    await _ensureConnected();
     socket.emit('createRoom', roomName);
     socket.emit('joinRoom', {
       'roomName': roomName,
       'username': 'jogador',
     });
 
-    await Process.start('node', ['../backend/bot.js', roomName, 'Bot']);
-    socket.emit('startGame', roomName);
+    void startGameListener(dynamic username) {
+      if (username == 'Bot') {
+        socket.off('playerJoined', startGameListener);
+        socket.emit('startGame', roomName);
+      }
+    }
 
+    socket.on('playerJoined', startGameListener);
+
+    try {
+      await Process.start('node', ['../backend/bot.js', roomName, 'Bot']);
+    } catch (e) {
+      print('Erro ao iniciar bot: $e');
+    }
+
+    if (!mounted) return;
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -143,17 +175,17 @@ class _HomePageState extends State<HomePage> {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: createRoom,
+              onPressed: () => createRoom(),
               child: const Text('Criar Sala'),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: joinRoom,
+              onPressed: () => joinRoom(),
               child: const Text('Entrar na Sala'),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: playAgainstBot,
+              onPressed: () => playAgainstBot(),
               child: const Text('Jogar contra Bot'),
             ),
           ],
