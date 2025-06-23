@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'dart:io';
 import 'room_page.dart';
+import 'game_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -115,7 +116,11 @@ class _HomePageState extends State<HomePage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => RoomPage(roomName: roomName, socket: socket),
+        builder: (context) => GameScreen(
+          socket: socket,
+          playerName: 'jogador',
+          roomCode: roomName,
+        ),
       ),
     );
   }
