@@ -4,6 +4,7 @@ const { Server } = require('socket.io');
 const cors = require('cors');
 
 const rooms = require('./rooms');
+const game = require('./game');
 
 const app = express();
 app.use(cors());
@@ -24,6 +25,10 @@ io.on('connection', (socket) => {
 
     socket.on('joinRoom', ({ roomName, username }) => {
         rooms.joinRoom(roomName, username, socket);
+    });
+
+    socket.on('startGame', (roomName) => {
+        game.startGame(roomName, io);
     });
 
     socket.on('sendMessage', ({ roomName, username, message }) => {

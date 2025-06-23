@@ -1,5 +1,9 @@
 const rooms = {};
 
+function getRoom(roomName) {
+    return rooms[roomName];
+}
+
 function createRoom(roomName, socket) {
     if (rooms[roomName]) {
         socket.emit('error', 'Essa sala já existe!');
@@ -49,5 +53,6 @@ module.exports = {
     createRoom,
     joinRoom,
     sendMessage,
-    disconnect
+    disconnect,
+    getRoom
 };
