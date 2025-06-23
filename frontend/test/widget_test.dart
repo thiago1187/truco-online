@@ -11,20 +11,16 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:frontend/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
+  testWidgets('Home page contains room field and action buttons',
+      (WidgetTester tester) async {
+    // Build the app and trigger a frame.
     await tester.pumpWidget(const MyApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Verify presence of the room name field.
+    expect(find.widgetWithText(TextField, 'Nome da sala'), findsOneWidget);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Verify presence of the create and join room buttons.
+    expect(find.widgetWithText(ElevatedButton, 'Criar Sala'), findsOneWidget);
+    expect(find.widgetWithText(ElevatedButton, 'Entrar na Sala'), findsOneWidget);
   });
 }
