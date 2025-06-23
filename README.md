@@ -55,6 +55,11 @@ cd truco-online
 cd backend
 npm install && npm start
 ```
+Se precisar alterar a porta padrão (3000), defina a variável `PORT` antes de iniciar o servidor. Exemplo:
+
+```bash
+PORT=4000 npm start
+```
 
 ### 3. Rodar o Frontend Flutter
 
